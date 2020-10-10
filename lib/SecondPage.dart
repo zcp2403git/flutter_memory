@@ -8,6 +8,8 @@ class SecondPage extends StatelessWidget {
   String value;
   GlobalKey _formKey = new GlobalKey<FormState>();
 
+  SecondPage({Key key, @required this.value}) : super(key: key) {}
+
   @override
   Widget build(BuildContext context) {
     TextEditingController _controller = new TextEditingController();
