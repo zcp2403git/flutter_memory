@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_memory/MemoryMonitorManager.dart';
 import 'package:flutter_memory/SecondPage.dart';
 
 void main() {
@@ -104,5 +105,14 @@ class FirstPage extends StatelessWidget {
                 }));
               })),
     );
+  }
+
+  void memoryTest() {
+    Expando<String> expando = Expando();
+    Widget target = Text("TEST");
+    expando[target] = "Test";
+    MemoryMonitorManager memoryMonitorManager = MemoryMonitorManager();
+    memoryMonitorManager.init();
+    memoryMonitorManager.processObject(expando);
   }
 }
