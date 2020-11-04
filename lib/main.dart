@@ -7,7 +7,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+  static final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -16,77 +17,24 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: FirstPage(),
+      routes: {
+        // 导航监听的路径
+        '/home': (context) => FirstPage(),
+        '/second': (context) => SecondTestPage(value: "1234567"),
+      },
+      navigatorObservers: [
+        GLObserver(),
+        routeObserver, // 路由监听
+      ],
     );
   }
 }
-//
-//class MyHomePage extends StatefulWidget {
-//  MyHomePage({Key key, this.title}) : super(key: key);
-//  final String title;
-//
-//  @override
-//  _MyHomePageState createState() => _MyHomePageState();
-//}
-//
-//class _MyHomePageState extends State<MyHomePage> {
-//  int _counter = 0;
-//
-//  void _incrementCounter() {
-//    setState(() {
-//      _counter++;
-//    });
-//  }
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    final wordPair = new WordPair.random();
-//    return Scaffold(
-//      appBar: AppBar(
-//        title: Text(widget.title),
-//      ),
-//      body: Center(
-//        child: Column(
-//          mainAxisAlignment: MainAxisAlignment.center,
-//          children: <Widget>[
-//            Text(wordPair.asPascalCase),
-//            Text(
-//              '$_counter',
-//              style: Theme.of(context).textTheme.display1,
-//            ),
-//          ],
-//        ),
-//      ),
-//      floatingActionButton: FloatingActionButton(
-//        onPressed: _incrementCounter,
-//        tooltip: 'Increment',
-//        child: Icon(Icons.add),
-//      ), // This trailing comma makes auto-formatting nicer for build methods.
-//    );
-//  }
-//
-//  @override
-//  void initState() {
-//    /// 初始化状态，加载用户信息
-//    print("initState:${new DateTime.now()}");
-//    _loadUserInfo();
-//    print("initState:${new DateTime.now()}");
-//    super.initState();
-//  }
-//
-//  Future _getUserInfo() async {
-//    await new Future.delayed(new Duration(milliseconds: 3000));
-//    return "我是用户";
-//  }
-//
-//  /// 加载用户信息，顺便打印时间看看顺序
-//  Future _loadUserInfo() async {
-//    print("_loadUserInfo:${new DateTime.now()}");
-//    print(await _getUserInfo());
-//    print("_loadUserInfo:${new DateTime.now()}");
-//  }
-//}
 
 class FirstPage extends StatelessWidget {
+  FirstPage() {
+    MemoryMonitorManager.instance.init();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,21 +46,42 @@ class FirstPage extends StatelessWidget {
               child: Text(" Navigator.push SecondPage"),
               onPressed: () {
                 //导航到SecondPage
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return SecondPage(
-                    value: "1234567",
-                  );
-                }));
+                Navigator.pushNamed(context, '/second');
+                // Navigator.push(context, MaterialPageRoute(builder: (context) {
+                //   return SecondPage1(
+                //     value: "1234567",
+                //   );
+                // }));
               })),
     );
   }
+}
 
-  void memoryTest() {
-    Expando<String> expando = Expando();
-    Widget target = Text("TEST");
-    expando[target] = "Test";
-    MemoryMonitorManager memoryMonitorManager = MemoryMonitorManager();
-    memoryMonitorManager.init();
-    memoryMonitorManager.processObject(expando);
+class GLObserver extends NavigatorObserver {
+// 添加导航监听后，跳转的时候需要使用Navigator.push路由
+  @override
+  void didPush(Route route, Route previousRoute) {
+    super.didPush(route, previousRoute);
+
+    var previousName = '';
+    if (previousRoute == null) {
+      previousName = 'null';
+    } else {
+      previousName = previousRoute.settings.name;
+    }
+    print('NavObserverDidPush-Current:' + route.settings.name + '  Previous:' + previousName);
+  }
+
+  @override
+  void didPop(Route route, Route previousRoute) {
+    super.didPop(route, previousRoute);
+
+    var previousName = '';
+    if (previousRoute == null) {
+      previousName = 'null';
+    } else {
+      previousName = previousRoute.settings.name;
+    }
+    print('NavObserverDidPop--Current:' + route.settings.name + '  Previous:' + previousName);
   }
 }

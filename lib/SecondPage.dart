@@ -3,12 +3,15 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class SecondPage extends StatelessWidget {
-  static BuildContext mContext;
-  String value;
-  GlobalKey _formKey = new GlobalKey<FormState>();
+import 'MemoryMonitorManager.dart';
 
-  SecondPage({Key key, @required this.value}) : super(key: key) {}
+class SecondTestPage extends StatelessWidget {
+  final value;
+  static BuildContext mContext;
+
+  SecondTestPage({Key key, @required this.value}) : super(key: key) {
+    MemoryMonitorManager.instance.watch(this);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,14 +31,8 @@ class SecondPage extends StatelessWidget {
                 print('delay 3s');
               });
               Navigator.pop(context);
+              MemoryMonitorManager.instance.analyze();
             }),
-        new Form(
-          key: _formKey,
-          child: new TextFormField(
-            controller: _controller,
-            decoration: new InputDecoration(labelText: 'Send a message'),
-          ),
-        ),
       ])),
     );
   }
