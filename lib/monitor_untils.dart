@@ -14,7 +14,7 @@ class MonitorUtils {
   }
 
   /// 获取主Isolate
-  static Future<Isolate> findMainIsolate(VmService serviceClient) async {
+  static Future<Isolate> getMainIsolate(VmService serviceClient) async {
     VM vm = await serviceClient.getVM();
     for (IsolateRef ref in vm.isolates) {
       final Isolate isolate = await serviceClient.getIsolate(ref.id);
@@ -27,7 +27,7 @@ class MonitorUtils {
 
   /// 对象转 id
   static Future<String> obj2Id(VmService service, dynamic obj) async {
-    Isolate isolate = await MonitorUtils.findMainIsolate(service);
+    Isolate isolate = await MonitorUtils.getMainIsolate(service);
     String isolateId = isolate.id;
     String libraryId = MonitorUtils.findLibraryId(isolate, "monitor_untils");
     List<String> argus = [];

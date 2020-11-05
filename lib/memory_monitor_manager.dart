@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:vm_service/utils.dart';
 import 'package:vm_service/vm_service.dart';
 import 'package:vm_service/vm_service_io.dart';
@@ -10,7 +11,7 @@ import 'monitor_untils.dart';
 class MemoryMonitorManager {
   VmService serviceClient;
   Expando _watchExpando;
-
+  static Widget mLeakContext;
   MethodChannel _methodChannel = MethodChannel('samples.flutter.io/battery');
   static final MemoryMonitorManager _instance = MemoryMonitorManager();
 
@@ -39,17 +40,18 @@ class MemoryMonitorManager {
   }
 
   Future<String> analyze() async {
+    if (mLeakContext != null) print("${mLeakContext}");
     String expandoId = await MonitorUtils.obj2Id(serviceClient, _watchExpando);
-    Isolate isolate = await MonitorUtils.findMainIsolate(serviceClient);
+    Isolate isolate = await MonitorUtils.getMainIsolate(serviceClient);
     String isolateId = isolate.id;
     serviceClient.getObject(isolateId, expandoId).then((instance) {
       MonitorUtils.logMessage("expando = ${(instance as Instance).fields}");
-      InstanceRef field = MonitorUtils.getDataFiled(instance);
-      serviceClient.getObject(isolateId, field.id).then((value) {
+      InstanceRef datafield = MonitorUtils.getDataFiled(instance);
+      serviceClient.getObject(isolateId, datafield.id).then((value) {
         MonitorUtils.logMessage("field = $value");
-        InstanceRef e = MonitorUtils.findUnNullElement(value);
-        if (e != null) {
-          serviceClient.getObject(isolateId, e.id).then((value) {
+        InstanceRef element = MonitorUtils.findUnNullElement(value);
+        if (element != null) {
+          serviceClient.getObject(isolateId, element.id).then((value) {
             getRetainingPath(isolateId, (value as Instance));
           });
         }

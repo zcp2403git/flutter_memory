@@ -7,8 +7,6 @@ import 'memory_monitor_manager.dart';
 
 class SecondTestPage extends StatelessWidget {
   final value;
-  static BuildContext mLeakContext;
-
   SecondTestPage({Key key, @required this.value}) : super(key: key) {
     MemoryMonitorManager.instance.watch(this);
   }
@@ -24,12 +22,12 @@ class SecondTestPage extends StatelessWidget {
         RaisedButton(
             child: Text("$value"),
             onPressed: () {
-              mLeakContext = context;
+              MemoryMonitorManager.mLeakContext = this;
               Future.delayed(Duration(seconds: 5), () {
                 print('delay 5s ');
+                MemoryMonitorManager.instance.analyze();
               });
               Navigator.pop(context);
-              MemoryMonitorManager.instance.analyze();
             }),
       ])),
     );
