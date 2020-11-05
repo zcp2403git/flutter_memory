@@ -29,12 +29,9 @@ class MonitorUtils {
   static Future<String> obj2Id(VmService service, dynamic obj) async {
     Isolate isolate = await MonitorUtils.findMainIsolate(service);
     String isolateId = isolate.id;
-    String libraryId = MonitorUtils.findLibraryId(isolate, "MonitorUntils");
+    String libraryId = MonitorUtils.findLibraryId(isolate, "monitor_untils");
     List<String> argus = [];
     InstanceRef keyRef = await service.invoke(isolateId, libraryId, "generateNewKey", argus);
-    service.getObject(isolateId, keyRef.id).then((value) {
-      print(value);
-    });
     String key = keyRef.valueAsString;
     _objCache[key] = obj;
     try {
@@ -64,6 +61,12 @@ class MonitorUtils {
       }
     }
     return null;
+  }
+
+  static void logMessage(String message) {
+    print("-------------------start----------------------");
+    print(message);
+    print("--------------------end-----------------------");
   }
 }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_memory/MemoryMonitorManager.dart';
-import 'package:flutter_memory/SecondPage.dart';
+import 'package:flutter_memory/memory_monitor_manager.dart';
+import 'package:flutter_memory/second_page.dart';
 
 void main() {
   runApp(MyApp());
